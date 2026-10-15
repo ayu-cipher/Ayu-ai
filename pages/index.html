@@ -1,0 +1,85 @@
+// File: pages/index.js
+// Main chat interface aur logic yaha hai
+import { useState, useRef, useEffect } from 'react';
+
+export default function Home() {
+  // Messages ka state manage karna
+  const [messages, setMessages] = useState([
+    { text: 'Hello! Main AYU ai hoon. Kaise madad kar sakta hoon?', sender: 'ai' }
+  ]);
+  const [input, setInput] = useState('');
+  const chatEndRef = useRef(null);
+
+  // Chat ko hamesha bottom par scroll rakhna
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  // Message bhejne ki function
+  const sendMessage = () => {
+    if (input.trim() === '') return;
+
+    // User ka message add karna
+    const userMsg = { text: input, sender: 'user' };
+    setMessages(prev => [...prev, userMsg]);
+    setInput('');
+
+    // AI ka response simulate karna (1 second delay)
+    setTimeout(() => {
+      const responses = [
+        'Ye ek bahut interesting point hai.',
+        'Main AYU hoon, main iska jawab de sakta hoon.',
+        'Thoda aur detail batao please.',
+        'Samajh gaya, process kar raha hoon.',
+        'Ye code kaam karega, try karo.'
+      ];
+      // Random response select karna
+      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+      setMessages(prev => [...prev, { text: randomResponse, sender: 'ai' }]);
+    }, 1000);
+  };
+
+  // Enter key se send karne ke liye
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') sendMessage();
+  };
+
+  return (
+    <div className="container">
+      {/* Header Section */}
+      <header className="header">
+        <h1>AYU ai</h1>
+      </header>
+
+      {/* Chat Messages Area */}
+      <div className="chat-container">
+        {messages.map((msg, index) => (
+          <div key={index} className={`message ${msg.sender}`}>
+            {msg.text}
+          </div>
+        ))}
+        <div ref={chatEndRef} />
+      </div>
+
+      {/* Input Section */}
+      <div className="input-area">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder="Message likho yaha..."
+          className="chat-input"
+        />
+        <button onClick={sendMessage} className="send-btn">
+          Send
+        </button>
+      </div>
+
+      {/* Footer with Developer Name */}
+      <footer className="footer">
+        Developer: AYU | &copy; 2024 AYU ai
+      </footer>
+    </div>
+  );
+}
